@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MexiTube - Red Social de Video Futurista con IA</title>
+    <meta name="description" content="MexiTube: La plataforma de video interactiva y futurista del planeta. Creación de video con IA, navegación 3D Book-Flip, Quad-View, Omni-Live WebRTC dual-cam, y lienzo overlay." />
+    <meta property="og:title" content="MexiTube - Red Social de Video Futurista con IA" />
+    <meta property="og:description" content="MexiTube: La plataforma de video interactiva y futurista del planeta. Creación de video con IA, navegación 3D Book-Flip, Quad-View, Omni-Live WebRTC dual-cam, y lienzo overlay." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Rajdhani:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+      (function() {
+        try {
+          var originalFetch = window.fetch ? window.fetch.bind(window) : null;
+          var activeFetch = originalFetch;
+          var targets = [window];
+          if (typeof Window !== 'undefined' && Window.prototype) {
+            targets.push(Window.prototype);
+          }
+          if (typeof globalThis !== 'undefined' && globalThis !== window) {
+            targets.push(globalThis);
+          }
+          for (var i = 0; i < targets.length; i++) {
+            try {
+              Object.defineProperty(targets[i], 'fetch', {
+                configurable: true,
+                enumerable: true,
+                get: function() {
+                  return activeFetch || originalFetch;
+                },
+                set: function(newFetch) {
+                  activeFetch = newFetch;
+                }
+              });
+            } catch (err) {}
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body class="bg-[#08090d] text-slate-100 overflow-x-hidden selection:bg-[#ff0055] selection:text-white">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

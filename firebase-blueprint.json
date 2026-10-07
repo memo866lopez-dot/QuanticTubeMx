@@ -1,0 +1,132 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile in QuanticTube",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Auth UID of the user" },
+        "name": { "type": "string", "maxLength": 100, "description": "Display name" },
+        "handle": { "type": "string", "maxLength": 50, "description": "Unique @handle" },
+        "email": { "type": "string", "maxLength": 200, "description": "Email address" },
+        "avatar": { "type": "string", "maxLength": 1000, "description": "Avatar URL" },
+        "bio": { "type": "string", "maxLength": 500, "description": "User biography" },
+        "subscribersCount": { "type": "number", "description": "Number of subscribers" },
+        "isVerified": { "type": "boolean", "description": "Verified status" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "name", "email", "createdAt"]
+    },
+    "Video": {
+      "title": "Video",
+      "description": "Video, Short, Photo, GIF or Live Stream item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique video ID" },
+        "title": { "type": "string", "maxLength": 200, "description": "Video title" },
+        "description": { "type": "string", "maxLength": 2000, "description": "Video description" },
+        "videoUrl": { "type": "string", "maxLength": 2000, "description": "URL of the video stream or asset" },
+        "thumbnailUrl": { "type": "string", "maxLength": 2000, "description": "Thumbnail preview URL" },
+        "creatorId": { "type": "string", "maxLength": 128, "description": "UID of the creator" },
+        "creatorName": { "type": "string", "maxLength": 100, "description": "Name of the creator" },
+        "creatorAvatar": { "type": "string", "maxLength": 1000, "description": "Avatar of creator" },
+        "format": { "type": "string", "enum": ["16:9", "9:16", "photo", "gif", "live"], "description": "Media format" },
+        "views": { "type": "number", "description": "View count" },
+        "likes": { "type": "number", "description": "Likes count" },
+        "tags": { "type": "string", "maxLength": 500, "description": "Comma-separated tags" },
+        "isAIGenerated": { "type": "boolean", "description": "Whether AI generated" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "title", "videoUrl", "creatorId", "format", "createdAt"]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "Comment with rich text or voice audio",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Comment ID" },
+        "videoId": { "type": "string", "maxLength": 128, "description": "Associated video ID" },
+        "userId": { "type": "string", "maxLength": 128, "description": "Author UID" },
+        "author": { "type": "string", "maxLength": 100, "description": "Author name" },
+        "avatar": { "type": "string", "maxLength": 1000, "description": "Author avatar URL" },
+        "text": { "type": "string", "maxLength": 1000, "description": "Text content" },
+        "audioUrl": { "type": "string", "maxLength": 2000, "description": "Optional voice note audio URL" },
+        "fontStyle": { "type": "string", "maxLength": 50, "description": "CSS font family" },
+        "fontSize": { "type": "string", "maxLength": 20, "description": "Font size" },
+        "fontColor": { "type": "string", "maxLength": 30, "description": "Font color hex or class" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "videoId", "userId", "author", "createdAt"]
+    },
+    "CommentPin": {
+      "title": "CommentPin",
+      "description": "Spatial comment pin placed at coordinates X,Y on video",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Pin ID" },
+        "videoId": { "type": "string", "maxLength": 128, "description": "Target video ID" },
+        "userId": { "type": "string", "maxLength": 128, "description": "Author UID" },
+        "xPercent": { "type": "number", "description": "X coordinate percentage" },
+        "yPercent": { "type": "number", "description": "Y coordinate percentage" },
+        "timeSeconds": { "type": "number", "description": "Video timestamp in seconds" },
+        "author": { "type": "string", "maxLength": 100, "description": "Author name" },
+        "avatar": { "type": "string", "maxLength": 1000, "description": "Avatar URL" },
+        "text": { "type": "string", "maxLength": 300, "description": "Comment text" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "videoId", "userId", "xPercent", "yPercent", "timeSeconds", "author", "text", "createdAt"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "Real-time room chat message",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Message ID" },
+        "senderId": { "type": "string", "maxLength": 128, "description": "Sender UID" },
+        "senderName": { "type": "string", "maxLength": 100, "description": "Sender display name" },
+        "senderAvatar": { "type": "string", "maxLength": 1000, "description": "Sender avatar" },
+        "text": { "type": "string", "maxLength": 500, "description": "Message content" },
+        "createdAt": { "type": "string", "description": "Timestamp" }
+      },
+      "required": ["id", "senderId", "senderName", "text", "createdAt"]
+    },
+    "Subscription": {
+      "title": "Subscription",
+      "description": "Subscription record between subscriber and creator",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Subscription document ID" },
+        "subscriberId": { "type": "string", "maxLength": 128, "description": "Subscriber UID" },
+        "creatorId": { "type": "string", "maxLength": 128, "description": "Creator UID" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "subscriberId", "creatorId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Public user profiles"
+    },
+    "/videos/{videoId}": {
+      "schema": "Video",
+      "description": "Published media: long videos, shorts, photos, gifs, and live streams"
+    },
+    "/comments/{commentId}": {
+      "schema": "Comment",
+      "description": "Comments with text styling and voice notes"
+    },
+    "/commentPins/{pinId}": {
+      "schema": "CommentPin",
+      "description": "Spatial interactive comment pins"
+    },
+    "/chatMessages/{messageId}": {
+      "schema": "ChatMessage",
+      "description": "Live connected users chat messages"
+    },
+    "/subscriptions/{subId}": {
+      "schema": "Subscription",
+      "description": "User subscriptions to channels"
+    }
+  }
+}

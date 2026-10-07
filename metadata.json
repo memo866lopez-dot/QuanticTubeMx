@@ -1,0 +1,12 @@
+{
+  "name": "MexiTube - Red Social de Video Futurista con IA",
+  "description": "MexiTube: La plataforma de video interactiva y futurista del planeta. Creación de video con IA, navegación 3D Book-Flip, Quad-View, Omni-Live WebRTC dual-cam, y lienzo overlay.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "display-capture"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Test connection doc
+    match /test/{docId} {
+      allow read: if true;
+    }
+
+    // Users Profiles
+    match /users/{userId} {
+      allow read: if true;
+      allow create, update: if true;
+      allow delete: if isOwner(userId);
+    }
+
+    // Videos & Media Collection (Long Videos, Shorts, Photos, GIFs)
+    match /videos/{videoId} {
+      allow read: if true;
+      allow create, update: if true;
+      allow delete: if true;
+    }
+
+    // Comments & Community Posts
+    match /comments/{commentId} {
+      allow read: if true;
+      allow create, update: if true;
+      allow delete: if isSignedIn();
+    }
+
+    // Spatial Comment Pins
+    match /commentPins/{pinId} {
+      allow read: if true;
+      allow create, update: if true;
+      allow delete: if isSignedIn();
+    }
+
+    // Chat Messages
+    match /chatMessages/{messageId} {
+      allow read: if true;
+      allow create, update: if true;
+      allow delete: if isSignedIn();
+    }
+
+    // Subscriptions
+    match /subscriptions/{subId} {
+      allow read: if true;
+      allow create, update: if true;
+      allow delete: if isSignedIn();
+    }
+  }
+}
