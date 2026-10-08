@@ -186,67 +186,92 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       const isDifferentSrc = !vid.src || (!vid.src.endsWith(targetSrc) && vid.src !== targetSrc);
       if (isDifferentSrc) {
         vid.src = targetSrc;
+        try {
+          vid.currentTime = 0;
+        } catch {}
+        vid.load();
+      } else {
+        try {
+          vid.currentTime = 0;
+        } catch {}
       }
-      try {
-        vid.currentTime = 0;
-      } catch {}
-      vid.load();
     }
 
+    let isCancelled = false;
+
     const playVideo = async () => {
-      if (!vid || activeVideoIdRef.current !== currentVideoId) return;
-      try {
-        // Attempt normal playback with audio first
-        vid.muted = isMuted;
-        await vid.play();
-        if (activeVideoIdRef.current === currentVideoId) {
-          setIsPlaying(true);
-          setIsAutoStarting(false);
-        }
-      } catch (err) {
-        if (activeVideoIdRef.current !== currentVideoId) return;
-        // Autoplay policy prevented playback with sound; immediately play muted!
-        console.warn('Autoplay with sound restricted by browser; starting muted:', err);
-        vid.muted = true;
-        setIsMuted(true);
+      if (!vid || isCancelled || activeVideoIdRef.current !== currentVideoId) return;
+      vid.playsInline = true;
+
+      // 1. First attempt: If sound is enabled and allowed by browser, play unmuted
+      if (!isMuted) {
         try {
-          await vid.play();
-          if (activeVideoIdRef.current === currentVideoId) {
+          vid.muted = false;
+          const p = vid.play();
+          if (p !== undefined) {
+            await p;
+          }
+          if (!isCancelled && activeVideoIdRef.current === currentVideoId) {
             setIsPlaying(true);
             setIsAutoStarting(false);
           }
-        } catch (mutedErr) {
-          if (activeVideoIdRef.current === currentVideoId) {
-            setIsPlaying(false);
-            setIsAutoStarting(false);
-          }
-          console.warn('Muted autoplay also blocked:', mutedErr);
+          return;
+        } catch (err) {
+          console.warn('Autoplay with sound restricted by browser; switching immediately to muted autoplay:', err);
         }
+      }
+
+      // 2. Guaranteed fallback: Muted autoplay (100% permitted by all browsers)
+      if (!vid || isCancelled || activeVideoIdRef.current !== currentVideoId) return;
+      try {
+        vid.defaultMuted = true;
+        vid.muted = true;
+        setIsMuted(true);
+        const mutedPromise = vid.play();
+        if (mutedPromise !== undefined) {
+          await mutedPromise;
+        }
+        if (!isCancelled && activeVideoIdRef.current === currentVideoId) {
+          setIsPlaying(true);
+          setIsAutoStarting(false);
+        }
+      } catch (mutedErr) {
+        console.warn('Muted autoplay waiting on media buffer:', mutedErr);
       }
     };
 
-    // Trigger immediate playback attempt (inherits user gesture token from drag/click)
+    // Trigger immediate playback attempt
     playVideo();
 
     // Additional listeners in case browser needs more buffer before decoding
     const onCanPlay = () => {
-      if (vid.paused && activeVideoIdRef.current === currentVideoId) {
+      if (!isCancelled && vid.paused && activeVideoIdRef.current === currentVideoId) {
         playVideo();
       }
     };
-    vid.addEventListener('canplay', onCanPlay, { once: true });
-    vid.addEventListener('loadeddata', onCanPlay, { once: true });
+    vid.addEventListener('canplay', onCanPlay);
+    vid.addEventListener('loadeddata', onCanPlay);
+    vid.addEventListener('loadedmetadata', onCanPlay);
 
     const autoStartTimer = window.setTimeout(() => {
-      if (activeVideoIdRef.current === currentVideoId) {
+      if (!isCancelled && activeVideoIdRef.current === currentVideoId) {
         setIsAutoStarting(false);
+        if (vid.paused) {
+          vid.defaultMuted = true;
+          vid.muted = true;
+          vid.play().then(() => {
+            if (!isCancelled) setIsPlaying(true);
+          }).catch(() => {});
+        }
       }
-    }, 1500);
+    }, 1200);
 
     return () => {
+      isCancelled = true;
       clearTimeout(autoStartTimer);
       vid.removeEventListener('canplay', onCanPlay);
       vid.removeEventListener('loadeddata', onCanPlay);
+      vid.removeEventListener('loadedmetadata', onCanPlay);
     };
   }, [video.id, currentSrc, effectiveSrc, selectTrigger]);
 

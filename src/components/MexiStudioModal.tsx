@@ -31,6 +31,7 @@ import { mexiSynth } from '../services/audioSynth';
 import { generateVideoStoryboard } from '../services/geminiService';
 import { addPhoto, addPost, addGif } from '../services/mediaHubService';
 import { registerVideoBlob, FALLBACK_VIDEOS } from '../services/videoBlobService';
+import { uploadVideoToCloudinary, getCloudinaryVideoThumbnail } from '../services/cloudinaryService';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -315,14 +316,27 @@ export const MexiStudioModal: React.FC<MexiStudioModalProps> = ({
   };
 
   // Publish from Studio
-  const handlePublishFromStudio = () => {
+  const handlePublishFromStudio = async () => {
     if (activeTab === 'upload') {
       if (uploadMediaType === 'long_video' || uploadMediaType === 'short_video') {
         const finalFormat = uploadMediaType === 'short_video' ? '9:16' : '16:9';
         const newVidId = `vid-${Date.now()}`;
         let finalUrl = videoUrl;
+        let finalThumb = videoThumbUrl;
+
         if (videoFile) {
-          finalUrl = registerVideoBlob(newVidId, videoFile);
+          try {
+            const res = await uploadVideoToCloudinary(videoFile);
+            if (res.success && res.url) {
+              finalUrl = res.url;
+              const autoThumb = getCloudinaryVideoThumbnail(res.url);
+              if (autoThumb && !finalThumb) finalThumb = autoThumb;
+            } else {
+              finalUrl = registerVideoBlob(newVidId, videoFile);
+            }
+          } catch {
+            finalUrl = registerVideoBlob(newVidId, videoFile);
+          }
         } else if (!finalUrl) {
           finalUrl = uploadMediaType === 'short_video' ? FALLBACK_VIDEOS['9:16'][0] : FALLBACK_VIDEOS['16:9'][0];
         }
@@ -332,7 +346,7 @@ export const MexiStudioModal: React.FC<MexiStudioModalProps> = ({
           title: videoTitle.trim() || (finalFormat === '9:16' ? 'Short Cuántico 9:16' : 'Video Largo Cuántico 16:9'),
           description: videoDesc.trim() || (language === 'es' ? 'Subido directamente desde QuanticStudio.' : 'Uploaded directly from QuanticStudio.'),
           videoUrl: finalUrl,
-          thumbnailUrl: videoThumbUrl || (finalFormat === '9:16' ? 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80' : 'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&w=1200&q=80'),
+          thumbnailUrl: finalThumb || (finalFormat === '9:16' ? 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80' : 'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&w=1200&q=80'),
           format: finalFormat,
           creator: currentUser,
           metrics: { views: 1, likes: 1, comments: 0, shares: 0 },

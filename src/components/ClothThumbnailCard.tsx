@@ -146,8 +146,12 @@ export const ClothThumbnailCard: React.FC<ClothThumbnailCardProps> = ({
   return (
     <div
       ref={cardRef}
-      draggable={true}
+      draggable={!onStartDragCloth}
       onDragStart={(e) => {
+        if (onStartDragCloth) {
+          e.preventDefault();
+          return;
+        }
         e.dataTransfer.setData('text/plain', video.id);
         e.dataTransfer.setData('video-id', video.id);
         e.dataTransfer.effectAllowed = 'copyMove';
