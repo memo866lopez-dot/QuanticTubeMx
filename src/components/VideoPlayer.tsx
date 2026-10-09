@@ -203,6 +203,14 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       if (!vid || isCancelled || activeVideoIdRef.current !== currentVideoId) return;
       vid.playsInline = true;
 
+      // Ensure element has valid source attribute before calling play()
+      if (!vid.src && !vid.currentSrc) return;
+
+      // If media metadata is not loaded yet, wait for canplay/loadedmetadata event
+      if (vid.readyState < HTMLMediaElement.HAVE_METADATA) {
+        return;
+      }
+
       // 1. First attempt: If sound is enabled and allowed by browser, play unmuted
       if (!isMuted) {
         try {
@@ -216,12 +224,18 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             setIsAutoStarting(false);
           }
           return;
-        } catch (err) {
-          console.warn('Autoplay with sound restricted by browser; switching immediately to muted autoplay:', err);
+        } catch (err: any) {
+          // If browser policy restricted unmuted playback, switch seamlessly to muted
+          if (err && (err.name === 'NotAllowedError' || String(err).includes('NotAllowedError'))) {
+            // Proceed to step 2 muted autoplay
+          } else {
+            // Buffer loading or aborted by subsequent selection; wait for canplay event
+            return;
+          }
         }
       }
 
-      // 2. Guaranteed fallback: Muted autoplay (100% permitted by all browsers)
+      // 2. Guaranteed fallback: Muted autoplay (100% permitted across all browsers)
       if (!vid || isCancelled || activeVideoIdRef.current !== currentVideoId) return;
       try {
         vid.defaultMuted = true;
@@ -235,15 +249,17 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           setIsPlaying(true);
           setIsAutoStarting(false);
         }
-      } catch (mutedErr) {
-        console.warn('Muted autoplay waiting on media buffer:', mutedErr);
+      } catch (_mutedErr) {
+        // Playback will begin as soon as canplay fires
       }
     };
 
-    // Trigger immediate playback attempt
-    playVideo();
+    // If media is already buffered/ready, initiate playback; otherwise onCanPlay will trigger
+    if (vid.readyState >= HTMLMediaElement.HAVE_METADATA) {
+      playVideo();
+    }
 
-    // Additional listeners in case browser needs more buffer before decoding
+    // Additional listeners when browser buffers enough video data
     const onCanPlay = () => {
       if (!isCancelled && vid.paused && activeVideoIdRef.current === currentVideoId) {
         playVideo();
@@ -256,7 +272,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     const autoStartTimer = window.setTimeout(() => {
       if (!isCancelled && activeVideoIdRef.current === currentVideoId) {
         setIsAutoStarting(false);
-        if (vid.paused) {
+        if (vid.paused && (vid.src || vid.currentSrc)) {
           vid.defaultMuted = true;
           vid.muted = true;
           vid.play().then(() => {
@@ -302,8 +318,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           setIsPlaying(true);
           triggerOsd('play');
         })
-        .catch((err) => {
-          console.warn('Playback with audio blocked, attempting muted play:', err);
+        .catch(() => {
+          vid.defaultMuted = true;
           vid.muted = true;
           setIsMuted(true);
           vid.play()

@@ -35,6 +35,7 @@ import {
   isMediaVideo
 } from '../services/channelService';
 import { ChannelAvatarMedia } from './ChannelAvatarMedia';
+import { registerVideoBlob } from '../services/videoBlobService';
 
 interface ChannelCustomizeModalProps {
   isOpen: boolean;
@@ -92,15 +93,12 @@ export const ChannelCustomizeModal: React.FC<ChannelCustomizeModalProps> = ({
     if (!file) return;
 
     const isVideo = file.type.startsWith('video/') || file.name.match(/\.(mp4|webm|mov|mkv)$/i);
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        setBannerUrl(reader.result);
-        setBannerType(isVideo ? 'video' : 'gif');
-        setBannerLoadError(false);
-      }
-    };
-    reader.readAsDataURL(file);
+    // Persist securely in IndexedDB and generate lightweight blob URL
+    const key = `ch_banner_${channel.id}_${Date.now()}`;
+    const liveBlobUrl = registerVideoBlob(key, file);
+    setBannerUrl(liveBlobUrl);
+    setBannerType(isVideo ? 'video' : 'gif');
+    setBannerLoadError(false);
   };
 
   // Handle direct file upload for channel logo photo (supports GIF, MP4, WebM, PNG, JPG)
@@ -110,14 +108,11 @@ export const ChannelCustomizeModal: React.FC<ChannelCustomizeModalProps> = ({
 
     const isVideo = file.type.startsWith('video/') || file.name.match(/\.(mp4|webm|mov|mkv)$/i);
     const isGif = file.type === 'image/gif' || file.name.match(/\.gif$/i);
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        setAvatar(reader.result);
-        setAvatarType(isVideo ? 'video' : isGif ? 'gif' : 'image');
-      }
-    };
-    reader.readAsDataURL(file);
+    // Persist securely in IndexedDB and generate lightweight blob URL
+    const key = `ch_logo_${channel.id}_${Date.now()}`;
+    const liveBlobUrl = registerVideoBlob(key, file);
+    setAvatar(liveBlobUrl);
+    setAvatarType(isVideo ? 'video' : isGif ? 'gif' : 'image');
   };
 
   // Handle manual banner URL change with auto-detect

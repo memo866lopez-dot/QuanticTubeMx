@@ -231,13 +231,14 @@ export const CreateMediaModal: React.FC<CreateMediaModalProps> = ({
               finalThumb = autoThumb;
             }
           } else {
-            console.warn('Cloudinary upload error:', res.error);
-            const isSignedHelp = res.isSignedPresetError
-              ? (language === 'es'
-                  ? ' El preset "' + presetInput + '" debe estar configurado como "Unsigned" en Cloudinary Settings > Upload > Upload presets.'
-                  : ' Preset "' + presetInput + '" must be set to "Unsigned" in Cloudinary Settings.')
-              : '';
-            setCloudinaryError((res.error || 'Error al subir a Cloudinary.') + isSignedHelp);
+            if (res.error && !res.error.includes('no configurado')) {
+              const isSignedHelp = res.isSignedPresetError
+                ? (language === 'es'
+                    ? ' El preset "' + presetInput + '" debe estar configurado como "Unsigned" en Cloudinary Settings > Upload > Upload presets.'
+                    : ' Preset "' + presetInput + '" must be set to "Unsigned" in Cloudinary Settings.')
+                : '';
+              setCloudinaryError((res.error || 'Error al subir a Cloudinary.') + isSignedHelp);
+            }
 
             // Register local blob so user progress is never lost
             finalUrl = registerVideoBlob(newVidId, videoFile);

@@ -169,24 +169,58 @@ export const ShortsView: React.FC<ShortsViewProps> = ({
     const vid = shortVideoRef.current;
     if (!vid) return;
 
-    vid.currentTime = 0;
-    vid.load();
+    let isCancelled = false;
 
-    const playPromise = vid.play();
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          setIsPlaying(true);
-        })
-        .catch((err) => {
-          console.info('Autoplay unmuted blocked by browser policy, muting to play smoothly:', err);
-          vid.muted = true;
-          setIsMuted(true);
-          vid.play()
-            .then(() => setIsPlaying(true))
-            .catch(() => {});
-        });
+    const playShort = () => {
+      if (!vid || isCancelled) return;
+      if (!vid.src && !vid.currentSrc) return;
+      if (vid.readyState < HTMLMediaElement.HAVE_METADATA) return;
+
+      const playPromise = vid.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            if (!isCancelled) setIsPlaying(true);
+          })
+          .catch((err) => {
+            if (err && (err.name === 'NotAllowedError' || String(err).includes('NotAllowedError'))) {
+              vid.defaultMuted = true;
+              vid.muted = true;
+              setIsMuted(true);
+              vid.play()
+                .then(() => {
+                  if (!isCancelled) setIsPlaying(true);
+                })
+                .catch(() => {});
+            }
+          });
+      }
+    };
+
+    try {
+      vid.currentTime = 0;
+    } catch {}
+
+    if (vid.readyState >= HTMLMediaElement.HAVE_METADATA) {
+      playShort();
     }
+
+    const onCanPlay = () => {
+      if (!isCancelled && vid.paused) {
+        playShort();
+      }
+    };
+
+    vid.addEventListener('canplay', onCanPlay);
+    vid.addEventListener('loadeddata', onCanPlay);
+    vid.addEventListener('loadedmetadata', onCanPlay);
+
+    return () => {
+      isCancelled = true;
+      vid.removeEventListener('canplay', onCanPlay);
+      vid.removeEventListener('loadeddata', onCanPlay);
+      vid.removeEventListener('loadedmetadata', onCanPlay);
+    };
   }, [activeShort?.id, localResolvedSrc, shortVideoSrc]);
 
   // Direct short video upload handler

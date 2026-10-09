@@ -376,11 +376,54 @@ export function loadChannels(): ChannelCustomization[] {
   return DEFAULT_CHANNELS;
 }
 
+function sanitizeChannelsForStorage(channels: ChannelCustomization[]): ChannelCustomization[] {
+  return channels.map((c) => {
+    let bUrl = c.bannerUrl;
+    let aUrl = c.avatar;
+    // If a massive data URI is present, sanitize to prevent QuotaExceededError in localStorage
+    if (bUrl && bUrl.startsWith('data:') && bUrl.length > 8000) {
+      bUrl = 'https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif';
+    }
+    if (aUrl && aUrl.startsWith('data:') && aUrl.length > 8000) {
+      aUrl = 'https://media.giphy.com/media/d31vTpVi1LAcDvdm/giphy.gif';
+    }
+    return { ...c, bannerUrl: bUrl, avatar: aUrl };
+  });
+}
+
+function cleanObsoleteStorageKeys(): void {
+  const obsoleteKeys = [
+    'quantictube_videos_v5',
+    'quantictube_videos_v6',
+    'quantictube_photos_v1',
+    'quantictube_photos_v2',
+    'quantictube_photos_v3',
+    'quantictube_channels_customization_v1'
+  ];
+  obsoleteKeys.forEach((k) => {
+    try {
+      localStorage.removeItem(k);
+    } catch {}
+  });
+}
+
 export function saveChannels(channels: ChannelCustomization[]): void {
   try {
-    localStorage.setItem(CHANNELS_STORAGE_KEY, JSON.stringify(channels));
-  } catch (e) {
-    console.warn('Error saving channels to localStorage:', e);
+    const sanitized = sanitizeChannelsForStorage(channels);
+    localStorage.setItem(CHANNELS_STORAGE_KEY, JSON.stringify(sanitized));
+  } catch (_e) {
+    // QuotaExceededError recovery: clean obsolete keys and store compact payload
+    try {
+      cleanObsoleteStorageKeys();
+      const compact = channels.map((c) => ({
+        ...c,
+        bannerUrl: c.bannerUrl?.startsWith('data:') ? 'https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif' : c.bannerUrl,
+        avatar: c.avatar?.startsWith('data:') ? 'https://media.giphy.com/media/d31vTpVi1LAcDvdm/giphy.gif' : c.avatar
+      }));
+      localStorage.setItem(CHANNELS_STORAGE_KEY, JSON.stringify(compact));
+    } catch (_recoveryErr) {
+      // Memory persistence active during session
+    }
   }
 }
 
@@ -449,19 +492,23 @@ export function saveUserChannel(updated: Partial<ChannelCustomization>): Channel
   };
   try {
     localStorage.setItem(USER_ACTIVE_CHANNEL_KEY, JSON.stringify(merged));
-
-    // Also update in all channels list
-    const all = loadChannels();
-    const existingIndex = all.findIndex((c) => c.id === merged.id || c.handle === merged.handle);
-    if (existingIndex >= 0) {
-      all[existingIndex] = merged;
-    } else {
-      all.push(merged);
-    }
-    saveChannels(all);
-  } catch (e) {
-    console.warn('Error saving user channel:', e);
+  } catch (_e) {
+    try {
+      cleanObsoleteStorageKeys();
+      const sanitized = sanitizeChannelsForStorage([merged])[0];
+      localStorage.setItem(USER_ACTIVE_CHANNEL_KEY, JSON.stringify(sanitized));
+    } catch {}
   }
+
+  // Also update in all channels list
+  const all = loadChannels();
+  const existingIndex = all.findIndex((c) => c.id === merged.id || c.handle === merged.handle);
+  if (existingIndex >= 0) {
+    all[existingIndex] = merged;
+  } else {
+    all.push(merged);
+  }
+  saveChannels(all);
   return merged;
 }
 
@@ -477,6 +524,12 @@ export function updateChannel(channel: ChannelCustomization): void {
   if (channel.isOwner) {
     try {
       localStorage.setItem(USER_ACTIVE_CHANNEL_KEY, JSON.stringify(channel));
-    } catch {}
+    } catch {
+      try {
+        cleanObsoleteStorageKeys();
+        const sanitized = sanitizeChannelsForStorage([channel])[0];
+        localStorage.setItem(USER_ACTIVE_CHANNEL_KEY, JSON.stringify(sanitized));
+      } catch {}
+    }
   }
 }

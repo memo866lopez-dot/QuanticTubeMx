@@ -57,6 +57,17 @@ export function uploadVideoToCloudinary(
     const cloudName = config.cloudName.trim();
     const uploadPreset = config.uploadPreset.trim();
 
+    // If Cloudinary is using placeholder credentials, do not make an invalid request
+    if (!cloudName || cloudName === 'QuanticTube' || !uploadPreset || uploadPreset === 'ml_default') {
+      resolve({
+        success: false,
+        url: '',
+        error: 'Cloudinary no configurado con credenciales de usuario.',
+        isSignedPresetError: false
+      });
+      return;
+    }
+
     const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`;
     const formData = new FormData();
     formData.append('file', fileOrBlob);
@@ -91,7 +102,6 @@ export function uploadVideoToCloudinary(
         }
 
         const errMsg = data.error?.message || `HTTP ${xhr.status}`;
-        console.warn('Cloudinary video upload error response:', data);
 
         const isSignedError =
           errMsg.toLowerCase().includes('unknown api key') ||
@@ -137,6 +147,17 @@ export function uploadImageToCloudinary(
     const cloudName = config.cloudName.trim();
     const uploadPreset = config.uploadPreset.trim();
 
+    // If Cloudinary is using placeholder credentials, do not make an invalid request
+    if (!cloudName || cloudName === 'QuanticTube' || !uploadPreset || uploadPreset === 'ml_default') {
+      resolve({
+        success: false,
+        url: '',
+        error: 'Cloudinary no configurado con credenciales de usuario.',
+        isSignedPresetError: false
+      });
+      return;
+    }
+
     const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
     const formData = new FormData();
     formData.append('file', fileOrBlob);
@@ -169,7 +190,6 @@ export function uploadImageToCloudinary(
         }
 
         const errMsg = data.error?.message || `HTTP ${xhr.status}`;
-        console.warn('Cloudinary image upload error response:', data);
 
         resolve({
           success: false,

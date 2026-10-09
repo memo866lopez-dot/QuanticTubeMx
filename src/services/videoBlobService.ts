@@ -84,6 +84,15 @@ export function uploadVideoToServer(id: string, fileOrBlob: Blob | File): Promis
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id, base64Data: base64, filename })
         });
+        if (!res.ok) {
+          resolve(null);
+          return;
+        }
+        const contentType = res.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+          resolve(null);
+          return;
+        }
         const data = await res.json();
         if (data.success && data.url) {
           inMemoryUrls.set(id, data.url);
@@ -117,8 +126,8 @@ export function uploadVideoToServer(id: string, fileOrBlob: Blob | File): Promis
           resolve(data.url);
           return;
         }
-      } catch (err) {
-        console.warn('Server video upload failed, keeping local blob:', err);
+      } catch (_err) {
+        // Keeping local IndexedDB blob without console noise
       }
       resolve(null);
     };
