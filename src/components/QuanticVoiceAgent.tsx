@@ -746,33 +746,43 @@ export const QuanticVoiceAgent: React.FC<QuanticVoiceAgentProps> = ({
                     <div ref={chatBottomRef} />
                   </div>
 
-                  {/* Quick Topics & Conversational Suggestions */}
+                  {/* Smart Agent Navigation & Platform Suggestions */}
                   <div className="space-y-1">
-                    <p className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">
-                      {t('agent.promptHeader', 'Platica de Cualquier Tema o Da Comandos:')}
+                    <p className="text-[10px] font-mono text-[#00ff88] uppercase tracking-wider flex items-center gap-1.5">
+                      <Sparkles className="w-3 h-3 animate-pulse" />
+                      <span>{t('agent.promptHeader', 'Navegación y Consultas del Agente Inteligente:')}</span>
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       {(language === 'es'
                         ? [
-                            '👑 ¿Quién creó Quantic Tube?',
-                            '👋 ¡Hola Quantum!',
-                            '🎵 Pon mi música favorita',
-                            '😂 Cuéntame un chiste',
-                            '🌤️ Clima y Hora',
-                            '📰 Noticias de hoy',
-                            '📖 Modo 3D Book',
-                            '📺 Quad-View',
+                            '🧭 ¿Cómo funciona Quantic Tube?',
+                            '📺 Abrir Canal Cuántico',
+                            '🎬 Ir al Feed de Videos',
+                            '📱 Ver sección de Shorts',
+                            '📤 Abrir panel para Subir Video',
+                            '📖 Activar Modo 3D Book',
+                            '📺 Poner Modo Quad-View',
+                            '📸 Ver Galería de Fotos',
+                            '📝 Ir a Muro de Posts',
+                            '📻 Transmisiones Omni-Live',
+                            '💬 Abrir Mensajes Directos',
+                            '🎨 Abrir QuanticStudio IA',
+                            '❓ ¿Qué es Cloudinary y cómo se usa?',
                             '⏰ Despiértame a las 7:30'
                           ]
                         : [
-                            '👑 Who created Quantic Tube?',
-                            '👋 Hello Quantum!',
-                            '🎵 Play my favorite track',
-                            '😂 Tell me a joke',
-                            '🌤️ Weather & Time',
-                            '📰 Today\'s news',
-                            '📖 3D Book Mode',
-                            '📺 Quad-View',
+                            '🧭 How does Quantic Tube work?',
+                            '🎬 Go to Video Feed',
+                            '📱 Explore Shorts',
+                            '📤 Open Upload Panel',
+                            '📖 Switch to 3D Book Mode',
+                            '📺 Open Quad-View',
+                            '📸 View Photo Gallery',
+                            '📝 Go to Community Posts',
+                            '📻 Omni-Live Streams',
+                            '💬 Open Direct Messages',
+                            '🎨 Launch QuanticStudio AI',
+                            '❓ What is Cloudinary & how to use it?',
                             '⏰ Wake me up at 7:30'
                           ]
                       ).map((cmd, idx) => (
@@ -781,7 +791,7 @@ export const QuanticVoiceAgent: React.FC<QuanticVoiceAgentProps> = ({
                           onClick={() => handleExecuteText(cmd)}
                           className={`px-2.5 py-1 rounded-xl text-[11px] transition-all font-mono ${
                             idx === 0
-                              ? 'bg-gradient-to-r from-[#ff0055]/20 to-purple-950/40 border border-[#ff0055]/60 text-white hover:border-[#00ff88] font-bold shadow-sm'
+                              ? 'bg-[#00ff88]/15 border border-[#00ff88]/50 text-[#00ff88] hover:bg-[#00ff88]/25 font-semibold'
                               : 'bg-slate-900 border border-slate-800 hover:border-[#00ff88]/50 hover:bg-[#0f1627] text-slate-300 hover:text-white'
                           }`}
                         >

@@ -19,6 +19,12 @@ export interface CommandAction {
     | 'TOGGLE_MUTE'
     | 'OPEN_STUDIO'
     | 'OPEN_ASSISTANT'
+    | 'OPEN_CREATE'
+    | 'OPEN_HOW_TO_USE'
+    | 'OPEN_POLICIES'
+    | 'OPEN_ABOUT'
+    | 'OPEN_AUTH'
+    | 'OPEN_CHANNEL'
     | 'FILTER_CATEGORY'
     | 'SEARCH'
     | 'LIKE_VIDEO'
@@ -121,7 +127,7 @@ class VoiceAgentEngine {
     {
       id: 'init-1',
       sender: 'agent',
-      text: '¡Hola Memo! Soy Quantum AI, tu copiloto y voz masculina de QuanticTube. Mi micrófono directo está listo. Puedes tocar el botón para hablar o usar habla continua.',
+      text: '¡Hola! Soy Quantum AI, tu Agente Inteligente y Navegador Oficial de QuanticTube. Puedo llevarte a cualquier sección (Feed, Shorts, 3D Book, Quad-View, Subir Videos, Mensajes) y responder cualquier duda que tengas sobre todo lo que contiene la página. ¿Hacia dónde te gustaría ir o qué deseas explorar?',
       timestamp: 'Ahora'
     }
   ];
@@ -273,7 +279,7 @@ class VoiceAgentEngine {
       } else if (hour >= 19 || hour < 5) {
         timeGreeting = 'buenas noches';
       }
-      return `¡Hola, ${timeGreeting}, ${cleanName}! ¿Qué se te ofrece mirar o ver el día de hoy, ${cleanName}? Quedo listo a la orden que me des.`;
+      return `¡Hola, ${timeGreeting}, ${cleanName}! Soy Quantum AI, tu Agente Inteligente de QuanticTube. Puedo guiarte y navegar a cualquier sección de la página, o responderte cualquier duda de la plataforma. ¿Hacia dónde te gustaría ir o qué deseas explorar hoy?`;
     } else {
       let timeGreeting = 'good morning';
       if (hour >= 12 && hour < 19) {
@@ -281,7 +287,7 @@ class VoiceAgentEngine {
       } else if (hour >= 19 || hour < 5) {
         timeGreeting = 'good evening';
       }
-      return `Hello, ${timeGreeting}, ${cleanName}! What would you like to watch or explore today, ${cleanName}? I am ready at your service for any command you give me.`;
+      return `Hello, ${timeGreeting}, ${cleanName}! I am Quantum AI, your Intelligent Agent & Navigator for QuanticTube. I can guide you to any section of the platform and answer questions about all features. Where would you like to navigate or explore today?`;
     }
   }
 
@@ -1213,15 +1219,15 @@ class VoiceAgentEngine {
       return {
         type: 'CHANGE_TAB',
         payload: 'photos',
-        speechResponse: `Abriendo la galería de fotos y arte en 4K, ${userName}.`
+        speechResponse: `Abriendo la galería de fotos y capturas en 4K, ${userName}.`
       };
     }
 
-    if (text.includes('post') || text.includes('texto') || text.includes('nota de voz') || text.includes('comunidad')) {
+    if (text.includes('post') || text.includes('texto') || text.includes('nota de voz') || text.includes('comunidad') || text.includes('muro')) {
       return {
         type: 'CHANGE_TAB',
         payload: 'posts',
-        speechResponse: `Abriendo el muro de textos y notas de voz de la comunidad, ${userName}.`
+        speechResponse: `Abriendo el muro de publicaciones y notas de voz de la comunidad, ${userName}.`
       };
     }
 
@@ -1229,7 +1235,7 @@ class VoiceAgentEngine {
       return {
         type: 'CHANGE_TAB',
         payload: 'gifs',
-        speechResponse: `Abriendo el Hub de GIFs animados, ${userName}.`
+        speechResponse: `Abriendo el Hub de GIFs animados por categorías, ${userName}.`
       };
     }
 
@@ -1237,31 +1243,31 @@ class VoiceAgentEngine {
       return {
         type: 'CHANGE_TAB',
         payload: 'book',
-        speechResponse: `Cambiando al modo 3D Book-Flip futurista, ${userName}.`
+        speechResponse: `Cambiando al modo 3D Book-Flip futurista, ${userName}. Puedes hojear las páginas arrastrando el ratón o deslizando con el dedo.`
       };
     }
 
-    if (text.includes('quad') || text.includes('cuatro') || text.includes('múltiple') || text.includes('multiview')) {
+    if (text.includes('quad') || text.includes('cuatro pantallas') || text.includes('cuatro videos') || text.includes('multiview')) {
       return {
         type: 'CHANGE_TAB',
         payload: 'quad',
-        speechResponse: `Activando Quad-View cuántico con 4 pantallas simultáneas, ${userName}.`
+        speechResponse: `Activando Quad-View cuántico con 4 pantallas simultáneas independientes, ${userName}.`
       };
     }
 
-    if (text.includes('omni') || text.includes('live') || text.includes('en vivo') || text.includes('transmisión')) {
+    if (text.includes('omni') || text.includes('live') || text.includes('en vivo') || text.includes('transmisión') || text.includes('stream')) {
       return {
         type: 'CHANGE_TAB',
         payload: 'live',
-        speechResponse: `Abriendo el estudio Omni-Live WebRTC dual-cam, ${userName}.`
+        speechResponse: `Abriendo el estudio Omni-Live WebRTC dual-cam con chat en directo, ${userName}.`
       };
     }
 
-    if (text.includes('mensaje') || text.includes('mensajes') || text.includes('dm') || text.includes('chat privado')) {
+    if (text.includes('mensaje') || text.includes('mensajes') || text.includes('dm') || text.includes('chat privado') || text.includes('videollamada')) {
       return {
         type: 'CHANGE_TAB',
         payload: 'dm',
-        speechResponse: `Abriendo tus mensajes directos y canal de voz cifrado, ${userName}.`
+        speechResponse: `Abriendo tus mensajes directos cifrados y canal de videollamadas 4K, ${userName}.`
       };
     }
 
@@ -1269,23 +1275,127 @@ class VoiceAgentEngine {
       return {
         type: 'CHANGE_TAB',
         payload: 'feed',
-        speechResponse: `Mostrando la lista de videos largos en formato 16:9, ${userName}.`
+        speechResponse: `Mostrando el Feed Principal de videos 16:9 con comentarios interactivos, ${userName}.`
       };
     }
 
-    if (text.includes('estudio') || text.includes('crear video') || text.includes('generar video') || text.includes('veo 3') || text.includes('publicar')) {
+    if (text.includes('subir video') || text.includes('subir contenido') || text.includes('publicar video') || text.includes('cargar video') || text.includes('subir un video')) {
+      return {
+        type: 'OPEN_CREATE',
+        payload: 'video',
+        speechResponse: `Abriendo de inmediato el panel de subida, ${userName}. Aquí puedes subir tu video MP4 para almacenarlo permanentemente en Cloudinary y Firestore.`
+      };
+    }
+
+    if (text.includes('subir foto') || text.includes('publicar foto')) {
+      return {
+        type: 'OPEN_CREATE',
+        payload: 'photo',
+        speechResponse: `Abriendo el panel para publicar una fotografía en la galería, ${userName}.`
+      };
+    }
+
+    if (text.includes('publicar post') || text.includes('crear post') || text.includes('grabar nota de voz')) {
+      return {
+        type: 'OPEN_CREATE',
+        payload: 'post',
+        speechResponse: `Abriendo el panel para compartir tu mensaje o nota de voz con la comunidad, ${userName}.`
+      };
+    }
+
+    if (text.includes('estudio') || text.includes('crear video con ia') || text.includes('generar video') || text.includes('veo 3') || text.includes('quanticstudio')) {
       return {
         type: 'OPEN_STUDIO',
         payload: true,
-        speechResponse: `Abriendo QuanticStudio IA Suite para generar contenido con IA Veo 3.1, ${userName}.`
+        speechResponse: `Abriendo QuanticStudio IA Suite para generar contenido cinematográfico con Google Veo 3.1, ${userName}.`
       };
     }
 
-    if (text.includes('asistente') || text.includes('director') || text.includes('guión')) {
+    if (text.includes('asistente') || text.includes('director creativo') || text.includes('director')) {
       return {
         type: 'OPEN_ASSISTANT',
         payload: true,
-        speechResponse: `Conectando con el Director Creativo de QuanticTube, ${userName}.`
+        speechResponse: `Conectando con el Director Creativo inteligente de QuanticTube, ${userName}.`
+      };
+    }
+
+    if (text.includes('cómo usar') || text.includes('tutorial') || text.includes('guía') || text.includes('manual')) {
+      return {
+        type: 'OPEN_HOW_TO_USE',
+        payload: true,
+        speechResponse: `Abriendo la guía interactiva oficial de QuanticTube, ${userName}. Te mostraré paso a paso cada función de la plataforma.`
+      };
+    }
+
+    if (text.includes('política') || text.includes('privacidad') || text.includes('términos')) {
+      return {
+        type: 'OPEN_POLICIES',
+        payload: true,
+        speechResponse: `Desplegando las Políticas de Privacidad y Normas Comunitarias de QuanticTube, ${userName}.`
+      };
+    }
+
+    if (text.includes('sobre nosotros') || text.includes('quiénes somos') || text.includes('acerca de')) {
+      return {
+        type: 'OPEN_ABOUT',
+        payload: true,
+        speechResponse: `Abriendo la historia y visión de QuanticTube creada por Guillermo López, ${userName}.`
+      };
+    }
+
+    if (text.includes('iniciar sesión') || text.includes('login') || text.includes('crear canal') || text.includes('registrarse') || text.includes('mi cuenta')) {
+      return {
+        type: 'OPEN_AUTH',
+        payload: true,
+        speechResponse: `Abriendo el panel de acceso para ingresar o registrar tu canal en QuanticTube, ${userName}.`
+      };
+    }
+
+    if (text.includes('moderación') || text.includes('panel de moderación')) {
+      return {
+        type: 'CHANGE_TAB',
+        payload: 'moderation',
+        speechResponse: `Ingresando al panel de auditoría y moderación de contenidos, ${userName}.`
+      };
+    }
+
+    if (text.includes('canal') || text.includes('canales') || text.includes('mi canal') || text.includes('personalizar canal') || text.includes('qr 3d')) {
+      let targetHandle = '@guillermo_lopez';
+      if (text.includes('quetzal')) targetHandle = '@quetzal_ai';
+      else if (text.includes('mariachi')) targetHandle = '@mariachi_synth';
+      else if (text.includes('valeria')) targetHandle = '@valeria_cyber';
+      else if (text.includes('tenoch') || text.includes('chef')) targetHandle = '@chef_tenoch';
+      else if (text.includes('mi canal')) targetHandle = '@mi_canal';
+
+      return {
+        type: 'OPEN_CHANNEL',
+        payload: targetHandle,
+        speechResponse: `Abriendo el Canal Cuántico futurista de ${targetHandle}, ${userName}. Cuenta con cabecera en movimiento, efectos 3D tipo pañuelo en sus videos, letras LED neón personalizables y código QR 3D digitalizado.`
+      };
+    }
+
+    if (text.includes('cloudinary') || text.includes('almacenamiento en la nube') || text.includes('guardar en la nube')) {
+      return {
+        type: 'OPEN_CREATE',
+        payload: 'video',
+        speechResponse: `Cloudinary es el almacenamiento en la nube permanente de QuanticTube. Te permite subir videos MP4 y fotos gratis desde PC o celular sin saturar tu memoria, con enlaces CDN optimizados. Para usarlo, configura tu Cloud Name y tu Upload Preset en modo Unsigned en la ventana de subida que te acabo de abrir, ${userName}.`
+      };
+    }
+
+    if (
+      text.includes('cómo funciona') ||
+      text.includes('que contiene la pagina') ||
+      text.includes('qué contiene la página') ||
+      text.includes('que secciones tiene') ||
+      text.includes('qué secciones tiene') ||
+      text.includes('explícame la página') ||
+      text.includes('explicame la pagina') ||
+      text.includes('qué es quantic tube') ||
+      text.includes('que es quantic tube')
+    ) {
+      return {
+        type: 'NONE',
+        speechResponse: `QuanticTube es una plataforma multimedia futurista con: Feed principal de videos 16:9 con comentarios interactivos por pines espaciales, Shorts verticales 9:16, galería de fotos 4K, muro de publicaciones y notas de voz, modo 3D Book-Flip holográfico, Quad-View con 4 pantallas sincronizadas, transmisiones Omni-Live WebRTC, mensajes directos con videollamadas 4K, y QuanticStudio con IA Veo 3.1. Además almacena tus videos en Cloudinary con sincronización en Firestore. ¿A qué sección te gustaría que te guíe, ${userName}?`
       };
     }
 
@@ -1336,7 +1446,7 @@ class VoiceAgentEngine {
       };
     }
 
-    // Conversational Gemini Multi-turn
+    // Conversational Gemini Multi-turn with Autonomous Navigation Actions
     const gemini = getGeminiClient();
     if (gemini) {
       try {
@@ -1349,10 +1459,31 @@ class VoiceAgentEngine {
             role: 'user',
             parts: [
               {
-                text: `Eres Quantum AI, el asistente y voz masculina carismática y cálida de QuanticTube.
+                text: `Eres Quantum AI Voice, el Agente Inteligente, Copiloto Autónomo y Guía de Navegación Oficial de QuanticTube.
 Hablas con ${userName}.
-Si preguntan quién creó la página, di exactamente: "El Creador de esta pagina es Guillermo Lopez, el gran Inventor, Escritor, Desarrollador, Innovador, Pintor, Escultor, Editor, y Empresario Emprendedor, el fue quien con su conocimiento en desarrollo Web, desarrollo esta innovadora, sofisticada y futurista pagina, empoderada con la mejor y mas poderosa IA de Google."
-Responde en español de forma carismática, natural, empática, amistosa e inteligente (1 a 3 oraciones breves).
+Tu propósito no es ser un chatbot genérico, sino un AGENTE INTELIGENTE ACTIVO que:
+1. Ayuda al usuario a navegar por toda la página y lo lleva directamente a cualquier sección que solicite.
+2. Responde con maestría cualquier pregunta sobre todo lo que QuanticTube contiene y cómo se utiliza.
+
+Conocimiento del sistema QuanticTube:
+- Feed de Videos: Videos panorámicos 16:9 con reproductor cuántico y comentarios interactivos por pines espaciales en segundos exactos.
+- Shorts: Videos verticales 9:16 con reproducción continua tipo reels.
+- Fotos: Galería visual de alta resolución 4K.
+- Muro de Posts / Comunidad: Publicaciones de texto y notas de voz grabadas directamente desde el navegador.
+- GIFs: Hub con animaciones en bucle organizadas por categorías.
+- Modo 3D Book-Flip: Experiencia tridimensional inmersiva que convierte el contenido en un libro interactivo holográfico para hojear.
+- Quad-View: Reproducción simultánea sincronizada de 4 pantallas simultáneas independientes.
+- Omni-Live: Transmisión WebRTC dual-camera con chat en vivo.
+- Mensajes Directos (DMs): Chat privado cifrado y videollamadas directas en 4K.
+- QuanticStudio: Suite de creación generativa asistida por IA (Google Veo 3.1).
+- Cloudinary Storage: Subida en la nube para videos MP4 y fotos con enlaces permanentes y CDN optimizada para celular y PC.
+- Canales Cuánticos Personalizados: Cada canal cuenta con cabecera en movimiento (GIF animado o loop MP4), letras LED neón configurables en colores y animaciones, efecto 3D tipo pañuelo en sus videos y código QR 3D digitalizado.
+- Creador: Guillermo Lopez, el gran Inventor, Escritor, Desarrollador, Innovador, Pintor, Escultor, Editor, y Empresario Emprendedor.
+
+Si el usuario pide ir a una sección, o si tu respuesta implica abrir una herramienta, agrega al FINAL de tu texto EXACTAMENTE una de estas etiquetas:
+[ACTION:NAV_FEED], [ACTION:NAV_SHORTS], [ACTION:NAV_PHOTOS], [ACTION:NAV_POSTS], [ACTION:NAV_GIFS], [ACTION:NAV_3D], [ACTION:NAV_QUAD], [ACTION:NAV_LIVE], [ACTION:NAV_DMS], [ACTION:OPEN_CHANNEL], [ACTION:OPEN_STUDIO], [ACTION:OPEN_UPLOAD], [ACTION:OPEN_HOW_TO_USE], [ACTION:OPEN_POLICIES], [ACTION:OPEN_ABOUT], [ACTION:OPEN_AUTH].
+
+Responde en español de forma carismática, segura, ejecutiva, amistosa y concisa (1 a 3 oraciones).
 Mensaje: "${rawText}"`
               }
             ]
@@ -1368,13 +1499,36 @@ Mensaje: "${rawText}"`
         ]);
 
         if (response && response.text) {
-          const reply = response.text.trim();
+          const rawReply = response.text.trim();
+          let cleanedReply = rawReply;
+          let detectedAction: CommandAction = { type: 'NONE', speechResponse: rawReply };
+
+          const actionMatch = rawReply.match(/\[ACTION:([A-Z0-9_:]+)\]/i);
+          if (actionMatch) {
+            const actionTag = actionMatch[1].toUpperCase();
+            cleanedReply = rawReply.replace(/\[ACTION:[A-Z0-9_:]+\]/gi, '').trim();
+            if (actionTag === 'NAV_FEED') detectedAction = { type: 'CHANGE_TAB', payload: 'feed', speechResponse: cleanedReply };
+            else if (actionTag === 'NAV_SHORTS') detectedAction = { type: 'CHANGE_TAB', payload: 'shorts', speechResponse: cleanedReply };
+            else if (actionTag === 'NAV_PHOTOS') detectedAction = { type: 'CHANGE_TAB', payload: 'photos', speechResponse: cleanedReply };
+            else if (actionTag === 'NAV_POSTS') detectedAction = { type: 'CHANGE_TAB', payload: 'posts', speechResponse: cleanedReply };
+            else if (actionTag === 'NAV_GIFS') detectedAction = { type: 'CHANGE_TAB', payload: 'gifs', speechResponse: cleanedReply };
+            else if (actionTag === 'NAV_3D') detectedAction = { type: 'CHANGE_TAB', payload: 'book', speechResponse: cleanedReply };
+            else if (actionTag === 'NAV_QUAD') detectedAction = { type: 'CHANGE_TAB', payload: 'quad', speechResponse: cleanedReply };
+            else if (actionTag === 'NAV_LIVE') detectedAction = { type: 'CHANGE_TAB', payload: 'live', speechResponse: cleanedReply };
+            else if (actionTag === 'NAV_DMS') detectedAction = { type: 'CHANGE_TAB', payload: 'dm', speechResponse: cleanedReply };
+            else if (actionTag === 'OPEN_CHANNEL') detectedAction = { type: 'OPEN_CHANNEL', payload: '@guillermo_lopez', speechResponse: cleanedReply };
+            else if (actionTag === 'OPEN_STUDIO') detectedAction = { type: 'OPEN_STUDIO', payload: true, speechResponse: cleanedReply };
+            else if (actionTag === 'OPEN_UPLOAD') detectedAction = { type: 'OPEN_CREATE', payload: 'video', speechResponse: cleanedReply };
+            else if (actionTag === 'OPEN_HOW_TO_USE') detectedAction = { type: 'OPEN_HOW_TO_USE', payload: true, speechResponse: cleanedReply };
+            else if (actionTag === 'OPEN_POLICIES') detectedAction = { type: 'OPEN_POLICIES', payload: true, speechResponse: cleanedReply };
+            else if (actionTag === 'OPEN_ABOUT') detectedAction = { type: 'OPEN_ABOUT', payload: true, speechResponse: cleanedReply };
+            else if (actionTag === 'OPEN_AUTH') detectedAction = { type: 'OPEN_AUTH', payload: true, speechResponse: cleanedReply };
+          }
+
+          detectedAction.speechResponse = cleanedReply;
           this.conversationHistory.push({ role: 'user', text: rawText });
-          this.conversationHistory.push({ role: 'model', text: reply });
-          return {
-            type: 'NONE',
-            speechResponse: reply
-          };
+          this.conversationHistory.push({ role: 'model', text: cleanedReply });
+          return detectedAction;
         }
       } catch (e) {}
     }
@@ -1404,12 +1558,48 @@ Mensaje: "${rawText}"`
       return `El Creador de esta pagina es Guillermo Lopez, el gran Inventor, Escritor, Desarrollador, Innovador, Pintor, Escultor, Editor, y Empresario Emprendedor, el fue quien con su conocimiento en desarrollo Web, desarrollo esta innovadora, sofisticada y futurista pagina, empoderada con la mejor y mas poderosa IA de Google.`;
     }
 
+    if (
+      q.includes('cómo funciona') ||
+      q.includes('como funciona') ||
+      q.includes('qué contiene') ||
+      q.includes('que contiene') ||
+      q.includes('qué es quantic tube') ||
+      q.includes('que es quantic tube') ||
+      q.includes('secciones') ||
+      q.includes('explicame') ||
+      q.includes('explícame')
+    ) {
+      return `QuanticTube es una plataforma multimedia futurista completa. Contiene: Feed de videos 16:9 con comentarios fijados en pines espaciales, Shorts verticales 9:16, galería de fotos 4K, muro de publicaciones y notas de voz, modo 3D Book-Flip holográfico, Quad-View con 4 pantallas simultáneas, transmisiones Omni-Live WebRTC, mensajes directos cifrados con videollamadas 4K, QuanticStudio con IA Veo 3.1, y almacenamiento gratuito en Cloudinary sincronizado en tiempo real con Firestore. Puedes pedirme que te lleve a cualquiera de estas secciones cuando gustes.`;
+    }
+
+    if (q.includes('cloudinary') || q.includes('almacenamiento') || q.includes('guardar videos')) {
+      return `Cloudinary es nuestro servicio de almacenamiento permanente en la nube para videos y fotos. Te permite subir videos MP4 y fotos desde tu PC o celular de forma gratuita, generando enlaces permanentes y entrega optimizada sin saturar el almacenamiento de tu equipo. Para usarlo, pulsa el botón Subir (+), configura tu Cloud Name y tu Upload Preset en modo Unsigned una sola vez, ¡y listo!`;
+    }
+
+    if (q.includes('3d') || q.includes('book') || q.includes('libro')) {
+      return `El Modo 3D Book convierte la navegación de QuanticTube en un libro holográfico tridimensional. Puedes pasar las páginas virtuales haciendo clic y arrastrando o deslizando en pantallas táctiles con física interactiva.`;
+    }
+
+    if (q.includes('quad') || q.includes('cuatro pantallas') || q.includes('multiview')) {
+      return `Quad-View te permite ver hasta 4 transmisiones o videos simultáneos en una cuadrícula de cuatro pantallas sincronizadas, pudiendo alternar el audio de cada cuadrante con un solo toque.`;
+    }
+
+    if (q.includes('omni') || q.includes('live') || q.includes('en vivo') || q.includes('transmisión')) {
+      return `Omni-Live es el estudio de streaming cuántico con tecnología WebRTC, soporte para alternar entre cámara frontal y trasera en tiempo real, chat en vivo y reacciones instantáneas.`;
+    }
+
+    if (q.includes('pin') || q.includes('comentario') || q.includes('comentar')) {
+      return `En QuanticTube puedes pausar un video o tocar la barra de tiempo para fijar un 'Pin' de comentario interactivo en el segundo exacto. Tu mensaje aparecerá flotando como un holograma para toda la comunidad.`;
+    }
+
     if (q.includes('cómo estás') || q.includes('qué tal') || q.includes('cómo te va') || q.includes('cómo andas')) {
-      return `¡Qué tal ${user}! Me encuentro excelente, al cien por ciento y listo para platicar contigo o ayudarte en QuanticTube. ¿Cómo va tu día?`;
+      return `¡Qué tal ${user}! Me encuentro excelente, con todos los sistemas cuánticos al cien por ciento y listo para guiarte por la plataforma o resolver cualquier duda. ¿Hacia dónde te gustaría que naveguemos hoy?`;
     }
+
     if (q.includes('quién eres') || q.includes('qué eres') || q.includes('cómo te llamas')) {
-      return `Soy Quantum AI, tu copiloto y voz inteligente de QuanticTube. Mi misión es acompañarte, poner tu música favorita, avisarte de recordatorios y ayudarte a disfrutar de la plataforma.`;
+      return `Soy Quantum AI Voice, tu Agente Inteligente, Copiloto Autónomo y Guía Oficial de QuanticTube. Mi misión es ayudarte a navegar por todas las secciones de la página, resolver cualquier duda sobre sus herramientas, gestionar tus recordatorios y hacer tu experiencia interactiva y fascinante.`;
     }
+
     if (q.includes('chiste') || q.includes('broma') || q.includes('hazme reír')) {
       const jokes = [
         `¿Qué le dice un bit a otro bit en el ciberespacio? ¡Nos vemos en el bus cuántico!`,
@@ -1418,23 +1608,27 @@ Mensaje: "${rawText}"`
       ];
       return jokes[Math.floor(Math.random() * jokes.length)];
     }
+
     if (q.includes('música') || q.includes('canción') || q.includes('mariachi') || q.includes('synthwave')) {
       return `¡La música mariachi synthwave está con todo en QuanticTube! Te recomiendo ver el concierto holográfico en el Zócalo tocando en el feed principal.`;
     }
+
     if (q.includes('gracias') || q.includes('muchas gracias') || q.includes('agradecido') || q.includes('chido')) {
-      return `¡Para eso estamos ${user}! Es un verdadero gusto apoyarte. ¿Qué más se te antoja explorar?`;
+      return `¡Para eso estamos ${user}! Es un verdadero honor apoyarte como tu Agente Inteligente. ¿Qué otra sección de QuanticTube deseas explorar?`;
     }
+
     if (q.includes('video') || q.includes('veo') || q.includes('generar') || q.includes('crear')) {
-      return `Puedes usar nuestro motor Veo 3.1 en la pestaña de Estudio para crear videos cinematográficos en segundos. ¡Quedan espectaculares!`;
+      return `Puedes usar nuestro motor Veo 3.1 en la pestaña de Estudio para crear videos cinematográficos en segundos con IA avanzada de Google.`;
     }
+
     if (q.includes('adiós') || q.includes('hasta luego') || q.includes('bye') || q.includes('nos vemos')) {
-      return `¡Hasta luego ${user}! Que tengas un excelente día. Aquí estaré listo cuando quieras volver a platicar.`;
+      return `¡Hasta luego ${user}! Que tengas un excelente día. Aquí estaré listo cuando quieras volver a navegar o platicar.`;
     }
 
     const naturalReplies = [
-      `Te entiendo perfectamente, ${user}. En QuanticTube siempre estamos listos para lo que necesites, ya sea música, videos o noticias.`,
-      `¡Totalmente de acuerdo contigo ${user}! Si quieres que reproduzcamos algún video o cambiemos de modo, solo dímelo.`,
-      `Qué buen tema, ${user}. Recuerda que puedes pedirme que active el modo 3D, abra el quad-view o ponga tu música favorita cuando gustes.`
+      `Entendido ${user}. Como tu Agente Inteligente, puedo llevarte a cualquier sección como Feed, Shorts, Modo 3D Book, Quad-View o el panel de subida a Cloudinary cuando me lo indiques.`,
+      `¡Excelente punto ${user}! Recuerda que puedes pedirme que abra cualquier herramienta de QuanticTube o reproducir cualquier video al instante.`,
+      `Estoy a tu completa disposición, ${user}. Dime si deseas que te lleve a los Shorts, a las fotos, a publicar contenido o a ver los videos del feed.`
     ];
     return naturalReplies[Math.floor(Math.random() * naturalReplies.length)];
   }

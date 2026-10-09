@@ -245,3 +245,40 @@ export interface ConnectedUser {
   chatMessages: ConnectedUserChatMessage[];
 }
 
+export type ChannelLedColor =
+  | 'neon-green' // #00ff88
+  | 'cyber-pink' // #ff007f
+  | 'quantum-blue' // #00d4ff
+  | 'solar-gold' // #ffb800
+  | 'synth-purple' // #a855f7
+  | 'laser-red' // #ff2244
+  | 'laser-white'; // #ffffff
+
+export type ChannelLedAnimation =
+  | 'pulse' // Palpitar rítmico suave
+  | 'flash' // Flash estroboscópico cyber
+  | 'glow' // Resplandor continuo intenso
+  | 'wave'; // Onda gradiente neón
+
+export interface ChannelCustomization {
+  id: string;
+  name: string;
+  handle: string;
+  bio: string;
+  avatar: string;
+  avatarType?: 'image' | 'gif' | 'video';
+  verified: boolean;
+  subscribers: string;
+  subscribersCount: number;
+  bannerType: 'video' | 'gif' | 'image';
+  bannerUrl: string; // MP4 loop, GIF animado o imagen
+  bannerMotionSpeed?: number;
+  ledColor: ChannelLedColor;
+  ledAnimation: ChannelLedAnimation;
+  videoTitleAnimation: 'marquee' | 'neon-pulse' | 'wave' | 'static';
+  videoDescAnimation: 'ticker' | 'glow-fade' | 'smooth' | 'static';
+  accentTheme: string;
+  links?: { title: string; url: string }[];
+  isOwner?: boolean;
+}
+

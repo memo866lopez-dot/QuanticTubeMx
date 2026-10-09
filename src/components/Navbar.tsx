@@ -40,7 +40,8 @@ export type NavigationTabType =
   | 'quadview'
   | 'live'
   | 'dms'
-  | 'moderation';
+  | 'moderation'
+  | 'channel';
 
 interface NavbarProps {
   currentTab: NavigationTabType;
@@ -227,11 +228,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </button>
 
-          {/* Create Channel Quick Button */}
+          {/* Quick Channel Button */}
           <button
-            onClick={() => openAuthModal('new_channel')}
-            title={t('nav.channelTooltip', 'Crear o gestionar tu canal')}
-            className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-500/40 text-cyan-300 text-xs font-orbitron font-semibold hover:border-cyan-400 transition-all shadow-sm active:scale-95 cursor-pointer"
+            onClick={() => onSelectTab('channel')}
+            title={t('nav.channelTooltip', 'Canal Cuántico Personalizado')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-500/40 text-cyan-300 text-xs font-orbitron font-semibold hover:border-cyan-400 transition-all shadow-sm active:scale-95 cursor-pointer"
           >
             <Tv className="w-3.5 h-3.5 text-cyan-400" />
             <span>{t('nav.channel', 'CANAL')}</span>
@@ -409,6 +410,22 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span>{t('tab.shorts', 'Shorts (9:16)')}</span>
             <span className="text-[9px] px-1 py-0.2 rounded bg-[#ff0055]/20 text-[#ff0055] border border-[#ff0055]/40">
               VIRAL
+            </span>
+          </button>
+
+          {/* TAB: CANALES CUÁNTICOS CON QR 3D Y BANNER MOVIMIENTO */}
+          <button
+            onClick={() => onSelectTab('channel')}
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-medium font-orbitron tracking-wide transition-all whitespace-nowrap cursor-pointer ${
+              currentTab === 'channel'
+                ? 'bg-gradient-to-r from-emerald-500/20 to-teal-950/40 text-emerald-400 border border-emerald-400/60 neon-glow-green font-bold'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+            }`}
+          >
+            <Tv className="w-3.5 h-3.5 text-emerald-400" />
+            <span>{t('tab.channel', 'Canal Cuántico')}</span>
+            <span className="text-[9px] px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+              3D QR
             </span>
           </button>
 

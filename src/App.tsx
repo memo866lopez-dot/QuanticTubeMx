@@ -75,14 +75,41 @@ import { DirectVideoCallModal } from './components/DirectVideoCallModal';
 import { HowToUseModal } from './components/HowToUseModal';
 import { PoliciesModal } from './components/PoliciesModal';
 import { AboutUsModal } from './components/AboutUsModal';
+import { ChannelView } from './components/ChannelView';
 
 function AppContent() {
   const { t } = useLanguage();
+  const { openAuthModal } = useAuth();
   // State for all 5 media collections
   const [videos, setVideos] = useState<VideoItem[]>(() => loadVideos());
   const [photos, setPhotos] = useState<PhotoItem[]>(() => loadPhotos());
   const [posts, setPosts] = useState<TextPostItem[]>(() => loadPosts());
   const [gifs, setGifs] = useState<GifItem[]>(() => loadGifs());
+
+  // Channel navigation state
+  const [selectedChannelHandle, setSelectedChannelHandle] = useState<string>('@guillermo_lopez');
+
+  // Listen to hash change for direct channel links (e.g. #channel/@canal)
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash;
+      if (hash.startsWith('#channel/')) {
+        const handle = decodeURIComponent(hash.replace('#channel/', ''));
+        setSelectedChannelHandle(handle);
+        setCurrentTab('channel');
+      }
+    };
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
+
+  const handleOpenChannel = (handleOrName: string) => {
+    const clean = handleOrName.startsWith('@') ? handleOrName : `@${handleOrName}`;
+    setSelectedChannelHandle(clean);
+    setCurrentTab('channel');
+    window.location.hash = `channel/${encodeURIComponent(clean)}`;
+  };
 
   // Real-time Firestore sync for Videos & Upload URL updater
   useEffect(() => {
@@ -326,12 +353,18 @@ function AppContent() {
           else if (action.payload === 'photos') setCurrentTab('photos');
           else if (action.payload === 'posts') setCurrentTab('posts');
           else if (action.payload === 'gifs') setCurrentTab('gifs');
-          else if (action.payload === 'book') setCurrentTab('bookflip');
-          else if (action.payload === 'quad') setCurrentTab('quadview');
+          else if (action.payload === 'book' || action.payload === 'bookflip') setCurrentTab('bookflip');
+          else if (action.payload === 'quad' || action.payload === 'quadview') setCurrentTab('quadview');
           else if (action.payload === 'live') setCurrentTab('live');
-          else if (action.payload === 'dm') setCurrentTab('dms');
+          else if (action.payload === 'dm' || action.payload === 'dms') setCurrentTab('dms');
+          else if (action.payload === 'moderation') setCurrentTab('moderation');
+          else if (action.payload === 'channel') setCurrentTab('channel');
           else setCurrentTab('feed');
         }
+        break;
+      case 'OPEN_CHANNEL':
+        if (action.payload) handleOpenChannel(action.payload);
+        else setCurrentTab('channel');
         break;
       case 'PLAY_VIDEO':
         if (action.payload) {
@@ -344,6 +377,24 @@ function AppContent() {
         break;
       case 'OPEN_ASSISTANT':
         setIsAssistantOpen(true);
+        break;
+      case 'OPEN_CREATE':
+        if (action.payload && ['video', 'short', 'photo', 'post', 'gif'].includes(action.payload)) {
+          setCreateMediaInitialType(action.payload);
+        }
+        setIsCreateMediaOpen(true);
+        break;
+      case 'OPEN_HOW_TO_USE':
+        setIsHowToUseOpen(true);
+        break;
+      case 'OPEN_POLICIES':
+        setIsPoliciesOpen(true);
+        break;
+      case 'OPEN_ABOUT':
+        setIsAboutUsOpen(true);
+        break;
+      case 'OPEN_AUTH':
+        openAuthModal();
         break;
       case 'SEARCH':
         if (typeof action.payload === 'string') {
@@ -394,6 +445,7 @@ function AppContent() {
             onLikeVideo={handleLikeVideo}
             onOpenShareModal={(item: ShareItemData) => setActiveShareItem(item)}
             onOpenCreateModal={() => setIsCreateMediaOpen(true)}
+            onOpenChannel={handleOpenChannel}
           />
         )}
 
@@ -463,6 +515,26 @@ function AppContent() {
 
         {/* TAB 10: PANEL DE MODERACIÓN IA */}
         {currentTab === 'moderation' && <ModerationPanel />}
+
+        {/* TAB 11: CANAL CUÁNTICO INDEPENDIENTE CON BANNER MOVIMIENTO Y QR 3D */}
+        {currentTab === 'channel' && (
+          <ChannelView
+            channelHandle={selectedChannelHandle}
+            onBackToFeed={() => setCurrentTab('feed')}
+            videos={videos}
+            photos={photos}
+            posts={posts}
+            gifs={gifs}
+            onSelectVideo={(id) => {
+              setActiveVideoId(id);
+              setCurrentTab('feed');
+            }}
+            onSelectChannel={(handle) => {
+              setSelectedChannelHandle(handle);
+              window.location.hash = `channel/${encodeURIComponent(handle)}`;
+            }}
+          />
+        )}
       </main>
 
       {/* Floating Action Button for Publishing on mobile */}

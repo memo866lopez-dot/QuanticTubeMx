@@ -53,6 +53,7 @@ interface LongVideosViewProps {
   onLikeVideo: (videoId: string) => void;
   onOpenShareModal: (item: ShareItemData) => void;
   onOpenCreateModal: () => void;
+  onOpenChannel?: (handleOrName: string) => void;
 }
 
 export const LongVideosView: React.FC<LongVideosViewProps> = ({
@@ -64,7 +65,8 @@ export const LongVideosView: React.FC<LongVideosViewProps> = ({
   onAddPin,
   onLikeVideo,
   onOpenShareModal,
-  onOpenCreateModal
+  onOpenCreateModal,
+  onOpenChannel
 }) => {
   const { language, t } = useLanguage();
   const [localSearch, setLocalSearch] = useState('');
@@ -589,18 +591,26 @@ export const LongVideosView: React.FC<LongVideosViewProps> = ({
                 {/* Creator Profile, Subscriber & Action Buttons */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
                   <div className="flex items-center gap-3">
-                    <div className="relative">
+                    <div
+                      onClick={() => onOpenChannel && onOpenChannel(activeVideo.creator.username || activeVideo.creator.name)}
+                      title="Abrir Canal Cuántico del Creador"
+                      className="relative cursor-pointer group/avatar hover:scale-105 transition-transform"
+                    >
                       <img
                         src={activeVideo.creator.avatar}
                         alt={activeVideo.creator.name}
-                        className="w-12 h-12 rounded-2xl object-cover border border-[#00ff88]/60 shadow-md shadow-[#00ff88]/20"
+                        className="w-12 h-12 rounded-2xl object-cover border border-[#00ff88]/60 shadow-md shadow-[#00ff88]/20 group-hover/avatar:border-[#00ff88]"
                       />
                       <span className="absolute -bottom-1 -right-1 w-3 h-3 bg-[#00ff88] rounded-full ring-2 ring-black" />
                     </div>
 
                     <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm sm:text-base text-white">{activeVideo.creator.name}</span>
+                      <div
+                        onClick={() => onOpenChannel && onOpenChannel(activeVideo.creator.username || activeVideo.creator.name)}
+                        title="Abrir Canal Cuántico del Creador"
+                        className="flex items-center gap-2 cursor-pointer group/name"
+                      >
+                        <span className="font-bold text-sm sm:text-base text-white group-hover/name:text-[#00ff88] transition-colors">{activeVideo.creator.name}</span>
                         {activeVideo.creator.verified && (
                           <span
                             className="w-4 h-4 rounded-full bg-[#00ff88] text-black text-[10px] font-bold flex items-center justify-center"
@@ -610,9 +620,19 @@ export const LongVideosView: React.FC<LongVideosViewProps> = ({
                           </span>
                         )}
                       </div>
-                      <span className="text-xs text-slate-400 font-mono">
-                        {activeVideo.creator.followers} {language === 'es' ? 'suscriptores' : 'subscribers'}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-slate-400 font-mono">
+                          {activeVideo.creator.followers} {language === 'es' ? 'suscriptores' : 'subscribers'}
+                        </span>
+                        {onOpenChannel && (
+                          <button
+                            onClick={() => onOpenChannel(activeVideo.creator.username || activeVideo.creator.name)}
+                            className="text-[10px] font-mono text-[#00ff88] hover:underline"
+                          >
+                            • Ver Canal
+                          </button>
+                        )}
+                      </div>
                     </div>
 
                     {/* Subscribe Button */}

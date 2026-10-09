@@ -118,3 +118,44 @@
 .animate-pulse-glow {
   animation: pulseGlow 2.5s infinite ease-in-out;
 }
+
+@keyframes scanLaser {
+  0% { top: 0%; opacity: 0.2; }
+  50% { top: 96%; opacity: 1; }
+  100% { top: 0%; opacity: 0.2; }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes ledFlash {
+  0%, 100% { opacity: 1; filter: brightness(1.2); }
+  25% { opacity: 0.35; filter: brightness(0.6); }
+  35% { opacity: 1; filter: brightness(1.5); }
+  75% { opacity: 0.7; filter: brightness(0.9); }
+}
+
+@keyframes ledPulse {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.02); filter: brightness(1.35); }
+}
+
+@keyframes neonWave {
+  0% { filter: hue-rotate(0deg) brightness(1); }
+  50% { filter: hue-rotate(45deg) brightness(1.3); }
+  100% { filter: hue-rotate(0deg) brightness(1); }
+}
+
+.animate-led-flash {
+  animation: ledFlash 2s infinite ease-in-out;
+}
+
+.animate-led-pulse {
+  animation: ledPulse 2.8s infinite ease-in-out;
+}
+
+.animate-neon-wave {
+  animation: neonWave 4s infinite linear;
+}
